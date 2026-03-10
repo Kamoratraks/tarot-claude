@@ -215,7 +215,12 @@
   <div id="phase-input">
     <div class="input-box">
       <p>ถามเรื่องอะไรก็ได้ — ความรัก งาน เงิน สุขภาพ การเมือง ฯลฯ</p>
-      <textarea id="question-input" placeholder="พิมพ์คำถามที่นี่..."></textarea>
+      <input type="password" id="api-key-input" placeholder="🔑 Anthropic API Key (sk-ant-...)" oninput="checkReady()"
+        style="width:100%;background:rgba(15,0,35,0.65);border:1px solid rgba(130,55,210,0.38);border-radius:10px;padding:12px 14px;color:#e8d5ff;font-size:14px;font-family:inherit;outline:none;margin-bottom:10px;" />
+      <p style="font-size:11px;color:#5a3080;margin-bottom:14px;line-height:1.6;">
+        Key ไม่ถูกเก็บที่ไหนเลย · รับได้ที่ <a href="https://console.anthropic.com/settings/keys" target="_blank" style="color:#7040a0;">console.anthropic.com</a>
+      </p>
+      <textarea id="question-input" placeholder="พิมพ์คำถามที่นี่..." oninput="checkReady()"></textarea>
       <button class="btn-draw" id="btn-draw" onclick="handleDraw()" disabled>🔮 จั่วไพ่</button>
     </div>
   </div>
@@ -392,9 +397,11 @@ function pick(arr, n) {
   return r;
 }
 
-document.getElementById('question-input').addEventListener('input', function() {
-  document.getElementById('btn-draw').disabled = !this.value.trim();
-});
+function checkReady() {
+  const key = document.getElementById('api-key-input').value.trim();
+  const q = document.getElementById('question-input').value.trim();
+  document.getElementById('btn-draw').disabled = !(key && q);
+}
 
 async function handleDraw() {
   const q = document.getElementById('question-input').value.trim();
@@ -405,7 +412,7 @@ async function handleDraw() {
   document.getElementById('display-question').textContent = q;
 
   const tc = pick(TAROT, 3), oc = pick(ORACLE, 3);
-  const rev = tc.map(() => Math.random() > 0.65);
+  const rev = tc.map(() => Math.random() < 0.5);
 
   // Fill cards
   tc.forEach((c,i) => {
@@ -447,7 +454,7 @@ async function handleDraw() {
   const tDesc = tc.map((c,i) => `ทาโรต์ใบ${i+1}: ${c.name} (${c.th})${rev[i]?' [กลับหัว]':''}`).join('\n');
   const oDesc = oc.map((c,i) => `ออราเคิลใบ${i+1}: ${c.name} (${c.th})`).join('\n');
 
-  const prompt = `คุณชื่อ "มีร่า" พี่ที่อ่านไพ่เป็น ใช้ภาษาพูดธรรมชาติ ใช้ "หนู" แทนคนถาม
+  const prompt = `คุณชื่อ "มีนา" เพื่อนที่อ่านไพ่เป็น ใช้ภาษาพูดธรรมชาติ ใช้ "เธอ" แทนคนถาม
 
 คำถาม: "${q}"
 ${tDesc}
@@ -472,7 +479,12 @@ ${oDesc}
   try {
     const res = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
-      headers: {"Content-Type":"application/json"},
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": document.getElementById('api-key-input').value.trim(),
+        "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-access": "true"
+      },
       body: JSON.stringify({
         model: "claude-sonnet-4-20250514",
         max_tokens: 1500,
@@ -520,12 +532,21 @@ function resetApp() {
   document.getElementById('divider').classList.remove('show');
 
   for (let i=0;i<3;i++){
-    document.getElementById(`ti${i}`).classList.remove('flipped','reversed');
+    const ti = document.getElementById(`ti${i}`);
+    ti.style.transition = 'none';
+    ti.classList.remove('flipped','reversed');
+    void ti.offsetWidth; // force reflow
+    ti.style.transition = '';
     document.getElementById(`tf${i}`).classList.remove('glow');
     document.getElementById(`trev${i}`).classList.add('hidden');
     document.getElementById(`tlabel${i}`).textContent='—';
     document.getElementById(`tlabel${i}`).classList.remove('visible');
-    document.getElementById(`oi${i}`).classList.remove('flipped');
+
+    const oi = document.getElementById(`oi${i}`);
+    oi.style.transition = 'none';
+    oi.classList.remove('flipped');
+    void oi.offsetWidth;
+    oi.style.transition = '';
     document.getElementById(`of${i}`).classList.remove('glow');
     document.getElementById(`olabel${i}`).textContent='—';
     document.getElementById(`olabel${i}`).classList.remove('visible');
