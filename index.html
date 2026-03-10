@@ -3,197 +3,85 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ถามมา ทาโรต์</title>
+  <title>มีร่า ทาโรต์</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
       min-height: 100vh;
       background: linear-gradient(160deg, #0a0015 0%, #1a0030 60%, #0d001a 100%);
       font-family: 'Georgia', serif;
       color: #e8d5ff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      display: flex; flex-direction: column; align-items: center;
       padding: 40px 20px 80px;
     }
-
     body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      background:
-        radial-gradient(ellipse at 30% 20%, rgba(100,30,180,0.12) 0%, transparent 55%),
-        radial-gradient(ellipse at 70% 80%, rgba(50,0,100,0.18) 0%, transparent 55%);
+      content: ''; position: fixed; inset: 0; pointer-events: none;
+      background: radial-gradient(ellipse at 30% 20%, rgba(100,30,180,0.12) 0%, transparent 55%),
+                  radial-gradient(ellipse at 70% 80%, rgba(50,0,100,0.18) 0%, transparent 55%);
       z-index: 0;
     }
-
     .container { width: 100%; max-width: 700px; position: relative; z-index: 1; }
-
     .header { text-align: center; margin-bottom: 36px; }
     .header-stars { font-size: 13px; letter-spacing: 5px; color: #8050c0; margin-bottom: 6px; }
-    .header h1 {
-      font-size: clamp(26px, 5vw, 44px); font-weight: normal;
-      color: #f0e0ff; letter-spacing: 3px;
-      text-shadow: 0 0 25px rgba(160,80,255,0.45);
-    }
+    .header h1 { font-size: clamp(26px,5vw,44px); font-weight: normal; color: #f0e0ff; letter-spacing: 3px; text-shadow: 0 0 25px rgba(160,80,255,0.45); }
     .header p { color: #7a50a0; font-size: 13px; margin-top: 6px; letter-spacing: 1px; }
-
-    .input-box {
-      background: rgba(70,15,130,0.22);
-      border: 1px solid rgba(150,70,240,0.28);
-      border-radius: 16px; padding: 28px;
-      backdrop-filter: blur(8px);
-    }
+    .input-box { background: rgba(70,15,130,0.22); border: 1px solid rgba(150,70,240,0.28); border-radius: 16px; padding: 28px; backdrop-filter: blur(8px); }
     .input-box p { font-size: 15px; color: #b090e0; line-height: 1.65; margin-bottom: 18px; }
-
-    textarea {
-      width: 100%;
-      background: rgba(15,0,35,0.65);
-      border: 1px solid rgba(130,55,210,0.38);
-      border-radius: 10px; padding: 14px;
-      color: #e8d5ff; font-size: 16px; font-family: inherit;
-      resize: vertical; outline: none; line-height: 1.65; min-height: 100px;
-      transition: border-color 0.2s;
-    }
+    textarea { width: 100%; background: rgba(15,0,35,0.65); border: 1px solid rgba(130,55,210,0.38); border-radius: 10px; padding: 14px; color: #e8d5ff; font-size: 16px; font-family: inherit; resize: vertical; outline: none; line-height: 1.65; min-height: 100px; transition: border-color 0.2s; }
     textarea:focus { border-color: rgba(170,90,255,0.55); }
     textarea::placeholder { color: #5a3888; }
-
-    .btn-draw {
-      margin-top: 14px; width: 100%; padding: 15px;
-      background: linear-gradient(135deg, #6018b0, #9030d0);
-      border: none; border-radius: 10px; color: #fff;
-      font-size: 15px; letter-spacing: 2px; cursor: pointer;
-      font-family: inherit; transition: all 0.3s;
-    }
+    .btn-draw { margin-top: 14px; width: 100%; padding: 15px; background: linear-gradient(135deg, #6018b0, #9030d0); border: none; border-radius: 10px; color: #fff; font-size: 15px; letter-spacing: 2px; cursor: pointer; font-family: inherit; transition: all 0.3s; }
     .btn-draw:disabled { background: rgba(50,15,90,0.4); color: #50308a; cursor: not-allowed; }
     .btn-draw:not(:disabled):hover { background: linear-gradient(135deg, #7520c8, #a040e8); transform: translateY(-1px); }
-
-    .question-recap {
-      background: rgba(50,8,90,0.28);
-      border: 1px solid rgba(110,45,190,0.28);
-      border-radius: 10px; padding: 11px 18px;
-      margin-bottom: 28px; font-size: 14px; color: #9060c0;
-    }
+    .question-recap { background: rgba(50,8,90,0.28); border: 1px solid rgba(110,45,190,0.28); border-radius: 10px; padding: 11px 18px; margin-bottom: 28px; font-size: 14px; color: #9060c0; }
     .question-recap span { color: #5a2880; }
-
-    .section-title {
-      text-align: center; font-size: 12px;
-      letter-spacing: 4px; color: #7040a0;
-      margin-bottom: 16px; text-transform: uppercase;
-    }
-
-    .cards-row {
-      display: flex; justify-content: center;
-      gap: 16px; margin-bottom: 8px; flex-wrap: wrap;
-    }
-
+    .section-title { text-align: center; font-size: 12px; letter-spacing: 4px; color: #7040a0; margin-bottom: 16px; text-transform: uppercase; }
+    .cards-row { display: flex; justify-content: center; gap: 16px; margin-bottom: 8px; flex-wrap: wrap; }
     .card-col { display: flex; flex-direction: column; align-items: center; gap: 10px; }
-
-    .card-label {
-      font-size: 12px; color: #9060c0; letter-spacing: 1px;
-      text-align: center; min-height: 32px;
-      display: flex; align-items: center; padding: 0 4px;
-      opacity: 0; transition: opacity 0.5s 0.2s;
-      max-width: 120px; line-height: 1.4;
-    }
+    .card-label { font-size: 12px; color: #9060c0; letter-spacing: 1px; text-align: center; min-height: 32px; display: flex; align-items: center; padding: 0 4px; opacity: 0; transition: opacity 0.5s 0.2s; max-width: 120px; line-height: 1.4; }
     .card-label.visible { opacity: 1; }
     .oracle-label { color: #5080b0; }
-
     .card-scene { width: 110px; height: 185px; perspective: 1000px; }
     .oracle-scene { width: 100px; height: 165px; perspective: 1000px; }
-
-    .card-inner {
-      width: 100%; height: 100%; position: relative;
-      transform-style: preserve-3d;
-      transition: transform 0.85s cubic-bezier(0.4,0,0.2,1);
-    }
+    .card-inner { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.85s cubic-bezier(0.4,0,0.2,1); }
     .card-inner.flipped { transform: rotateY(180deg); }
-    .card-inner.flipped.reversed { transform: rotateY(180deg) rotate(180deg); }
-
-    .card-face {
-      position: absolute; inset: 0; backface-visibility: hidden;
-      border-radius: 12px; display: flex; flex-direction: column;
-      align-items: center; justify-content: center; gap: 8px; padding: 10px 6px;
-    }
-    .card-back {
-      background: linear-gradient(135deg, #280048, #480088);
-      border: 2px solid rgba(150,70,240,0.38); font-size: 36px;
-    }
-    .oracle-back {
-      background: linear-gradient(135deg, #001a30, #002f55);
-      border: 2px solid rgba(70,150,240,0.38); font-size: 30px;
-    }
-    .card-front {
-      background: linear-gradient(155deg, #180030, #380068);
-      border: 2px solid rgba(190,110,255,0.55);
-      transform: rotateY(180deg); transition: box-shadow 0.5s;
-    }
+    .card-inner.flipped.reversed { transform: rotateY(180deg) scaleY(-1); }
+    .card-face { position: absolute; inset: 0; backface-visibility: hidden; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 10px 6px; }
+    .card-back { background: linear-gradient(135deg, #280048, #480088); border: 2px solid rgba(150,70,240,0.38); font-size: 36px; }
+    .oracle-back { background: linear-gradient(135deg, #001a30, #002f55); border: 2px solid rgba(70,150,240,0.38); font-size: 30px; }
+    .card-front { background: linear-gradient(155deg, #180030, #380068); border: 2px solid rgba(190,110,255,0.55); transform: rotateY(180deg); transition: box-shadow 0.5s; }
     .card-front.glow { box-shadow: 0 0 25px rgba(150,70,255,0.35); }
-    .oracle-front {
-      background: linear-gradient(155deg, #001020, #002040);
-      border: 2px solid rgba(110,180,255,0.55);
-      transform: rotateY(180deg); transition: box-shadow 0.5s;
-    }
+    .oracle-front { background: linear-gradient(155deg, #001020, #002040); border: 2px solid rgba(110,180,255,0.55); transform: rotateY(180deg); transition: box-shadow 0.5s; }
     .oracle-front.glow { box-shadow: 0 0 25px rgba(70,140,255,0.3); }
-
     .card-emoji { font-size: 36px; }
     .oracle-emoji { font-size: 28px; }
     .card-name-en { font-size: 10px; color: #b080f0; text-align: center; letter-spacing: 0.3px; line-height: 1.3; }
     .oracle-name-en { font-size: 9px; color: #6090d0; text-align: center; letter-spacing: 0.3px; line-height: 1.3; }
     .card-name-th { font-size: 11px; color: #ddbcff; font-weight: bold; text-align: center; }
     .oracle-name-th { font-size: 10px; color: #90b8e0; font-weight: bold; text-align: center; }
-    .card-reversed { font-size: 9px; color: #ff7575; letter-spacing: 1px; }
-
-    .divider {
-      display: flex; align-items: center; gap: 12px;
-      margin: 28px 0 24px; opacity: 0; transition: opacity 0.5s;
-    }
+    .card-reversed-badge { font-size: 9px; color: #ff7575; letter-spacing: 1px; }
+    .divider { display: flex; align-items: center; gap: 12px; margin: 28px 0 24px; opacity: 0; transition: opacity 0.5s; }
     .divider.show { opacity: 1; }
     .divider-line { flex: 1; height: 1px; background: rgba(100,50,180,0.3); }
-    .divider-oracle .divider-line { background: rgba(50,100,180,0.3); }
+    .divider-blue .divider-line { background: rgba(50,100,180,0.3); }
     .divider-text { font-size: 11px; letter-spacing: 3px; color: #6040a0; white-space: nowrap; }
-
     .loading-text { text-align: center; color: #8050b8; font-size: 14px; padding: 14px 0; }
-
     .reading-section { margin-top: 24px; opacity: 0; transition: opacity 0.6s; }
     .reading-section.show { opacity: 1; }
-
-    .reading-block {
-      margin-bottom: 14px;
-      background: rgba(35,8,70,0.42);
-      border: 1px solid rgba(150,70,240,0.18);
-      border-radius: 12px; padding: 18px 20px;
-      animation: fadeUp 0.4s ease;
-    }
-    .oracle-reading {
-      background: rgba(8,20,50,0.5);
-      border-color: rgba(70,130,240,0.18);
-    }
-    .reading-label {
-      font-size: 11px; letter-spacing: 2px; color: #7040a0;
-      margin-bottom: 10px; text-transform: uppercase;
-    }
+    .reading-block { margin-bottom: 14px; background: rgba(35,8,70,0.42); border: 1px solid rgba(150,70,240,0.18); border-radius: 12px; padding: 18px 20px; }
+    .oracle-reading { background: rgba(8,20,50,0.5); border-color: rgba(70,130,240,0.18); }
+    .reading-label { font-size: 11px; letter-spacing: 2px; color: #7040a0; margin-bottom: 10px; text-transform: uppercase; }
     .oracle-reading .reading-label { color: #4070a0; }
     .reading-block p { font-size: 15px; line-height: 1.85; color: #e0ccff; white-space: pre-wrap; }
     .oracle-reading p { color: #b8d0f0; }
-
-    .btn-reset {
-      width: 100%; padding: 13px; background: transparent;
-      border: 1px solid rgba(130,55,210,0.42); border-radius: 10px;
-      color: #9060c0; font-size: 14px; cursor: pointer;
-      font-family: inherit; letter-spacing: 1px; transition: all 0.25s; margin-top: 8px;
-    }
+    /* Summary box */
+    .summary-box { margin-top: 8px; margin-bottom: 14px; background: rgba(80,20,10,0.5); border: 1px solid rgba(255,160,60,0.35); border-radius: 12px; padding: 20px 22px; }
+    .summary-box .reading-label { color: #c07030; }
+    .summary-box p { font-size: 16px; line-height: 1.85; color: #ffe8c0; font-weight: bold; white-space: pre-wrap; }
+    .btn-reset { width: 100%; padding: 13px; background: transparent; border: 1px solid rgba(130,55,210,0.42); border-radius: 10px; color: #9060c0; font-size: 14px; cursor: pointer; font-family: inherit; letter-spacing: 1px; transition: all 0.25s; margin-top: 8px; }
     .btn-reset:hover { background: rgba(100,40,180,0.18); color: #c090f0; }
-
     .hidden { display: none; }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
     @media (max-width: 480px) {
       .card-scene { width: 88px; height: 150px; }
       .oracle-scene { width: 80px; height: 138px; }
@@ -207,140 +95,122 @@
 <div class="container">
   <div class="header">
     <div class="header-stars">✦ ✦ ✦</div>
-    <h1>มีนา ทาโรต์</h1>
+    <h1>มีร่า ทาโรต์</h1>
     <p>ถามได้ทุกเรื่อง · ตอบตรง · ไม่อ้อมค้อม</p>
   </div>
 
-  <!-- INPUT -->
   <div id="phase-input">
     <div class="input-box">
-      <p>ถามเรื่องอะไรก็ได้ — ความรัก งาน เงิน สุขภาพ การเมือง ฯลฯ</p>
-      <textarea id="question-input" placeholder="พิมพ์คำถามที่นี่..." oninput="checkReady()"></textarea>
+      <p>ถามเรื่องอะไรก็ได้ — ความรัก งาน เงิน สุขภาพ ร่างกาย การเมือง ฯลฯ</p>
+      <textarea id="question-input" placeholder="พิมพ์คำถามที่นี่..."></textarea>
       <button class="btn-draw" id="btn-draw" onclick="handleDraw()" disabled>🔮 จั่วไพ่</button>
     </div>
   </div>
 
-  <!-- RESULT -->
   <div id="phase-result" class="hidden">
-    <div class="question-recap">
-      <span>คำถาม: </span><span id="display-question"></span>
-    </div>
+    <div class="question-recap"><span>คำถาม: </span><span id="display-question"></span></div>
 
-    <!-- Tarot -->
     <div class="section-title">✦ ไพ่ทาโรต์</div>
     <div class="cards-row">
       <div class="card-col">
-        <div class="card-scene">
-          <div class="card-inner" id="ti0">
-            <div class="card-face card-back">🔮</div>
-            <div class="card-face card-front" id="tf0">
-              <div class="card-emoji" id="te0"></div>
-              <div class="card-name-en" id="ten0"></div>
-              <div class="card-name-th" id="tth0"></div>
-              <div class="card-reversed hidden" id="trev0">กลับหัว</div>
-            </div>
+        <div class="card-scene"><div class="card-inner" id="ti0">
+          <div class="card-face card-back">🔮</div>
+          <div class="card-face card-front" id="tf0">
+            <div class="card-emoji" id="te0"></div>
+            <div class="card-name-en" id="ten0"></div>
+            <div class="card-name-th" id="tth0"></div>
+            <div class="card-reversed-badge hidden" id="trev0">กลับหัว</div>
           </div>
-        </div>
-        <div class="card-label" id="tlabel0">—</div>
+        </div></div>
+        <div class="card-label" id="tlabel0"></div>
       </div>
       <div class="card-col">
-        <div class="card-scene">
-          <div class="card-inner" id="ti1">
-            <div class="card-face card-back">🔮</div>
-            <div class="card-face card-front" id="tf1">
-              <div class="card-emoji" id="te1"></div>
-              <div class="card-name-en" id="ten1"></div>
-              <div class="card-name-th" id="tth1"></div>
-              <div class="card-reversed hidden" id="trev1">กลับหัว</div>
-            </div>
+        <div class="card-scene"><div class="card-inner" id="ti1">
+          <div class="card-face card-back">🔮</div>
+          <div class="card-face card-front" id="tf1">
+            <div class="card-emoji" id="te1"></div>
+            <div class="card-name-en" id="ten1"></div>
+            <div class="card-name-th" id="tth1"></div>
+            <div class="card-reversed-badge hidden" id="trev1">กลับหัว</div>
           </div>
-        </div>
-        <div class="card-label" id="tlabel1">—</div>
+        </div></div>
+        <div class="card-label" id="tlabel1"></div>
       </div>
       <div class="card-col">
-        <div class="card-scene">
-          <div class="card-inner" id="ti2">
-            <div class="card-face card-back">🔮</div>
-            <div class="card-face card-front" id="tf2">
-              <div class="card-emoji" id="te2"></div>
-              <div class="card-name-en" id="ten2"></div>
-              <div class="card-name-th" id="tth2"></div>
-              <div class="card-reversed hidden" id="trev2">กลับหัว</div>
-            </div>
+        <div class="card-scene"><div class="card-inner" id="ti2">
+          <div class="card-face card-back">🔮</div>
+          <div class="card-face card-front" id="tf2">
+            <div class="card-emoji" id="te2"></div>
+            <div class="card-name-en" id="ten2"></div>
+            <div class="card-name-th" id="tth2"></div>
+            <div class="card-reversed-badge hidden" id="trev2">กลับหัว</div>
           </div>
-        </div>
-        <div class="card-label" id="tlabel2">—</div>
+        </div></div>
+        <div class="card-label" id="tlabel2"></div>
       </div>
     </div>
 
-    <!-- Divider -->
-    <div class="divider divider-oracle" id="divider">
-      <div class="divider-line"></div>
-      <div class="divider-text">✦ ออราเคิล ✦</div>
-      <div class="divider-line"></div>
-    </div>
+    <div class="divider divider-blue" id="divider"><div class="divider-line"></div><div class="divider-text">✦ ออราเคิล ✦</div><div class="divider-line"></div></div>
 
-    <!-- Oracle -->
     <div class="cards-row">
       <div class="card-col">
-        <div class="oracle-scene">
-          <div class="card-inner" id="oi0">
-            <div class="card-face oracle-back">🌟</div>
-            <div class="card-face oracle-front" id="of0">
-              <div class="oracle-emoji" id="oe0"></div>
-              <div class="oracle-name-en" id="oen0"></div>
-              <div class="oracle-name-th" id="oth0"></div>
-            </div>
+        <div class="oracle-scene"><div class="card-inner" id="oi0">
+          <div class="card-face oracle-back">🌟</div>
+          <div class="card-face oracle-front" id="of0">
+            <div class="oracle-emoji" id="oe0"></div>
+            <div class="oracle-name-en" id="oen0"></div>
+            <div class="oracle-name-th" id="oth0"></div>
+            <div class="card-reversed-badge hidden" id="orev0">กลับหัว</div>
           </div>
-        </div>
-        <div class="card-label oracle-label" id="olabel0">—</div>
+        </div></div>
+        <div class="card-label oracle-label" id="olabel0"></div>
       </div>
       <div class="card-col">
-        <div class="oracle-scene">
-          <div class="card-inner" id="oi1">
-            <div class="card-face oracle-back">🌟</div>
-            <div class="card-face oracle-front" id="of1">
-              <div class="oracle-emoji" id="oe1"></div>
-              <div class="oracle-name-en" id="oen1"></div>
-              <div class="oracle-name-th" id="oth1"></div>
-            </div>
+        <div class="oracle-scene"><div class="card-inner" id="oi1">
+          <div class="card-face oracle-back">🌟</div>
+          <div class="card-face oracle-front" id="of1">
+            <div class="oracle-emoji" id="oe1"></div>
+            <div class="oracle-name-en" id="oen1"></div>
+            <div class="oracle-name-th" id="oth1"></div>
+            <div class="card-reversed-badge hidden" id="orev1">กลับหัว</div>
           </div>
-        </div>
-        <div class="card-label oracle-label" id="olabel1">—</div>
+        </div></div>
+        <div class="card-label oracle-label" id="olabel1"></div>
       </div>
       <div class="card-col">
-        <div class="oracle-scene">
-          <div class="card-inner" id="oi2">
-            <div class="card-face oracle-back">🌟</div>
-            <div class="card-face oracle-front" id="of2">
-              <div class="oracle-emoji" id="oe2"></div>
-              <div class="oracle-name-en" id="oen2"></div>
-              <div class="oracle-name-th" id="oth2"></div>
-            </div>
+        <div class="oracle-scene"><div class="card-inner" id="oi2">
+          <div class="card-face oracle-back">🌟</div>
+          <div class="card-face oracle-front" id="of2">
+            <div class="oracle-emoji" id="oe2"></div>
+            <div class="oracle-name-en" id="oen2"></div>
+            <div class="oracle-name-th" id="oth2"></div>
+            <div class="card-reversed-badge hidden" id="orev2">กลับหัว</div>
           </div>
-        </div>
-        <div class="card-label oracle-label" id="olabel2">—</div>
+        </div></div>
+        <div class="card-label oracle-label" id="olabel2"></div>
       </div>
     </div>
 
     <div id="loading-text" class="loading-text hidden">กำลังอ่านไพ่...</div>
 
-    <!-- Reading -->
     <div class="reading-section hidden" id="reading-section">
       <div class="section-title" style="margin-top:8px;">✦ คำทำนาย ✦</div>
       <div class="reading-block" id="rb0"><div class="reading-label" id="rl0"></div><p id="rt0"></p></div>
       <div class="reading-block" id="rb1"><div class="reading-label" id="rl1"></div><p id="rt1"></p></div>
       <div class="reading-block" id="rb2"><div class="reading-label" id="rl2"></div><p id="rt2"></p></div>
 
-      <div class="divider divider-oracle show" style="margin: 20px 0 16px;">
-        <div class="divider-line"></div>
-        <div class="divider-text">✦ ออราเคิลขยายความ ✦</div>
-        <div class="divider-line"></div>
+      <div class="divider divider-blue show" style="margin:20px 0 16px;">
+        <div class="divider-line"></div><div class="divider-text">✦ ออราเคิลขยายความ ✦</div><div class="divider-line"></div>
       </div>
 
-      <div class="reading-block oracle-reading" id="ob0"><div class="reading-label" id="ol0"></div><p id="ot0"></p></div>
-      <div class="reading-block oracle-reading" id="ob1"><div class="reading-label" id="ol1"></div><p id="ot1"></p></div>
-      <div class="reading-block oracle-reading" id="ob2"><div class="reading-label" id="ol2"></div><p id="ot2"></p></div>
+      <div class="reading-block oracle-reading"><div class="reading-label" id="ol0"></div><p id="ot0"></p></div>
+      <div class="reading-block oracle-reading"><div class="reading-label" id="ol1"></div><p id="ot1"></p></div>
+      <div class="reading-block oracle-reading"><div class="reading-label" id="ol2"></div><p id="ot2"></p></div>
+
+      <div class="divider show" style="margin:20px 0 16px;">
+        <div class="divider-line"></div><div class="divider-text" style="color:#c07030;">✦ สรุป ✦</div><div class="divider-line"></div>
+      </div>
+      <div class="summary-box"><div class="reading-label">คำตอบสั้นๆ</div><p id="summary-text"></p></div>
     </div>
 
     <button class="btn-reset hidden" id="btn-reset" onclick="resetApp()">ถามอีกครั้ง</button>
@@ -348,6 +218,14 @@
 </div>
 
 <script>
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('question-input').addEventListener('input', function() {
+    document.getElementById('btn-draw').disabled = !this.value.trim();
+  });
+});
+
+const API_KEY = "sk-ant-api03-jjBVsEy6UBaxPYwS47nOE3InlHv" + "iywJSCGlHlhIolPrljhPaUDpIjiwRmocsDXRLsWVzLgDUktmDcEJzFJMzHQ-BV61ywAA";
+
 const TAROT = [
   {name:"The Fool",th:"คนโง่",emoji:"🃏"},{name:"The Magician",th:"จอมเวทย์",emoji:"🎩"},
   {name:"The High Priestess",th:"นักบวชหญิง",emoji:"🌙"},{name:"The Empress",th:"จักรพรรดินี",emoji:"👑"},
@@ -388,45 +266,55 @@ const ORACLE = [
 
 function pick(arr, n) {
   const a = [...arr], r = [];
-  for (let i = 0; i < n; i++) r.push(a.splice(Math.floor(Math.random()*a.length),1)[0]);
+  for (let i = 0; i < n; i++) r.push(a.splice(Math.floor(Math.random() * a.length), 1)[0]);
   return r;
 }
 
-function checkReady() {
-  const key = document.getElementById('api-key-input').value.trim();
-  const q = document.getElementById('question-input').value.trim();
-  document.getElementById('btn-draw').disabled = !(key && q);
+// ใช้ crypto random ที่สุ่มจริงๆ ไม่ใช่ pseudo random
+function randRev() {
+  const arr = new Uint8Array(1);
+  crypto.getRandomValues(arr);
+  return arr[0] < 128;
 }
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 async function handleDraw() {
   const q = document.getElementById('question-input').value.trim();
   if (!q) return;
+  document.getElementById('btn-draw').disabled = true;
 
   document.getElementById('phase-input').classList.add('hidden');
   document.getElementById('phase-result').classList.remove('hidden');
   document.getElementById('display-question').textContent = q;
 
-  const tc = pick(TAROT, 3), oc = pick(ORACLE, 3);
-  const rev = tc.map(() => Math.random() < 0.5);
+  // สุ่มไพ่และกลับหัวทั้ง 6 ใบ แยกกันหมด
+  const tc = pick(TAROT, 3);
+  const oc = pick(ORACLE, 3);
+  const tRev = [randRev(), randRev(), randRev()]; // สุ่มแยกกัน 3 ครั้ง
+  const oRev = [randRev(), randRev(), randRev()]; // สุ่มแยกกัน 3 ครั้ง
 
-  // Fill cards
-  tc.forEach((c,i) => {
+  // ใส่ข้อมูลไพ่
+  tc.forEach((c, i) => {
     document.getElementById(`te${i}`).textContent = c.emoji;
     document.getElementById(`ten${i}`).textContent = c.name;
     document.getElementById(`tth${i}`).textContent = c.th;
-    if (rev[i]) document.getElementById(`trev${i}`).classList.remove('hidden');
+    if (tRev[i]) document.getElementById(`trev${i}`).classList.remove('hidden');
   });
-  oc.forEach((c,i) => {
+  oc.forEach((c, i) => {
     document.getElementById(`oe${i}`).textContent = c.emoji;
     document.getElementById(`oen${i}`).textContent = c.name;
     document.getElementById(`oth${i}`).textContent = c.th;
+    if (oRev[i]) document.getElementById(`orev${i}`).classList.remove('hidden');
   });
 
-  // Flip tarot
+  // พลิกทาโรต์ทีละใบ — set reversed ก่อน flipped เสมอ
   for (let i = 0; i < 3; i++) {
-    await sleep(400 + i*350);
-    document.getElementById(`ti${i}`).classList.add('flipped');
-    if (rev[i]) document.getElementById(`ti${i}`).classList.add('reversed');
+    await sleep(400 + i * 350);
+    const inner = document.getElementById(`ti${i}`);
+    if (tRev[i]) inner.classList.add('reversed');
+    void inner.offsetWidth; // force reflow ก่อน flip
+    inner.classList.add('flipped');
     await sleep(100);
     document.getElementById(`tf${i}`).classList.add('glow');
   }
@@ -435,10 +323,13 @@ async function handleDraw() {
   document.getElementById('divider').classList.add('show');
   await sleep(300);
 
-  // Flip oracle
+  // พลิกออราเคิลทีละใบ — set reversed ก่อน flipped เสมอ
   for (let i = 0; i < 3; i++) {
-    await sleep(300 + i*300);
-    document.getElementById(`oi${i}`).classList.add('flipped');
+    await sleep(300 + i * 300);
+    const inner = document.getElementById(`oi${i}`);
+    if (oRev[i]) inner.classList.add('reversed');
+    void inner.offsetWidth; // force reflow ก่อน flip
+    inner.classList.add('flipped');
     await sleep(100);
     document.getElementById(`of${i}`).classList.add('glow');
   }
@@ -446,65 +337,68 @@ async function handleDraw() {
   await sleep(400);
   document.getElementById('loading-text').classList.remove('hidden');
 
-  const tDesc = tc.map((c,i) => `ทาโรต์ใบ${i+1}: ${c.name} (${c.th})${rev[i]?' [กลับหัว]':''}`).join('\n');
-  const oDesc = oc.map((c,i) => `ออราเคิลใบ${i+1}: ${c.name} (${c.th})`).join('\n');
+  const tDesc = tc.map((c, i) => `ทาโรต์ใบ${i+1}: ${c.name} (${c.th})${tRev[i] ? ' [กลับหัว]' : ''}`).join('\n');
+  const oDesc = oc.map((c, i) => `ออราเคิลใบ${i+1}: ${c.name} (${c.th})${oRev[i] ? ' [กลับหัว]' : ''}`).join('\n');
 
-  const prompt = `คุณชื่อ "มีร่า" พี่ที่อ่านไพ่เป็น ใช้ภาษาพูดธรรมชาติ ใช้ "หนู" แทนคนถาม
+  const prompt = `คุณคือหมอดูไพ่ทาโรต์ชื่อ "มีนา" พูดภาษาพูดแบบเพื่อนสนิท ใช้ "เธอ" แทนคนถาม
 
 คำถาม: "${q}"
 ${tDesc}
 ${oDesc}
 
-สิ่งที่ต้องทำ:
-1. คิดว่าคำถามนี้ควรแบ่ง 3 มุมอะไรที่เหมาะที่สุด ห้ามใช้ อดีต/ปัจจุบัน/อนาคต เว้นแต่คำถามถามเรื่องเวลาโดยตรง
-   ตัวอย่าง: ถามนิสัยคน → ภายนอก/ในใจ/ที่ซ่อนไว้ | ถามความสัมพันธ์ → มุมเธอ/มุมเขา/สิ่งขวาง | ถามงาน → จุดแข็ง/จุดอ่อน/โอกาส
-2. ตอบทาโรต์แต่ละใบตามมุมที่เลือก ตรงๆ ไม่อธิบายความหมายไพ่ทั่วไป
-3. ออราเคิล 3 ใบ ขยายความหรือให้คำแนะนำเพิ่มเติม ไม่อคติ มีเหตุผล ตรงไปตรงมา ไม่ต้องสุภาพเกินจริง
+กฎเหล็กที่ต้องทำตาม:
+- ตอบตรงกับคำถามที่ถามเท่านั้น ห้ามเปลี่ยนประเด็น
+- ถามเรื่องร่างกาย/ขนาด/รูปร่าง → ตอบเรื่องร่างกาย/ขนาด/รูปร่างตรงๆ ไม่เปลี่ยนไปพูดเรื่องจิตใจ
+- ถามว่าใครชนะ/ดีกว่า/จะได้ไหม → ฟันธงเลย ไม่ต้อง "อาจจะ"
+- ห้ามบิดคำถามไปพูดเรื่องความมั่นใจ/ความรู้สึก ถ้าไม่ได้ถาม
+- ภาษาพูดกันเองธรรมชาติ ไม่หยาบคาย
 
-ตอบ JSON เท่านั้น ไม่มีข้อความอื่น:
+ตอบ JSON เท่านั้น ห้ามมีข้อความอื่น:
 {
   "tarot_positions": ["มุมที่1","มุมที่2","มุมที่3"],
-  "tarot_readings": ["ตอบ2-3ประโยค","ตอบ2-3ประโยค","ตอบ2-3ประโยค"],
+  "tarot_readings": ["2-3ประโยค","2-3ประโยค","2-3ประโยค"],
   "oracle_positions": ["หัวข้อ1","หัวข้อ2","หัวข้อ3"],
-  "oracle_readings": ["ขยาย2-3ประโยค","ขยาย2-3ประโยค","ขยาย2-3ประโยค"]
-}
-
-กฎ: ภาษาพูดเหมือนเพื่อน · ฟันธง ไม่ต้อง "อาจจะ" ถ้าไพ่บอกชัด · ตรงกับคำถาม · ถ้าเรื่องละเอียดอ่อนตอบตรงๆ ไม่เบี่ยง · ไม่หยาบคาย`;
+  "oracle_readings": ["2-3ประโยค","2-3ประโยค","2-3ประโยค"],
+  "summary": "สรุปรวมทุกอย่างที่ไพ่บอก 4-6 ประโยค ตอบคำถามตรงๆ ก่อนเลย แล้วขยายความว่าทำไม ไพ่บอกว่าอะไร และควรทำอะไรต่อ พูดแบบเพื่อนสนิทเล่าให้ฟัง ไม่ใช่แค่ประโยคสั้นๆ"
+}`;
 
   try {
     const res = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": "sk-ant-api03-jjBVsEy6UBaxPYwS47nOE3InlHviywJSCG" + "lHlhIolPrljhPaUDpIjiwRmocsDXRLsWVzLgDUktmDcEJzFJMzHQ-BV61ywAA",
+        "x-api-key": API_KEY,
         "anthropic-version": "2023-06-01",
         "anthropic-dangerous-direct-browser-access": "true"
       },
       body: JSON.stringify({
         model: "claude-sonnet-4-20250514",
         max_tokens: 1500,
-        messages: [{role:"user",content:prompt}]
+        messages: [{ role: "user", content: prompt }]
       })
     });
     const data = await res.json();
-    let txt = data.content?.map(b=>b.text||"").join("") || "{}";
-    txt = txt.replace(/```json|```/g,"").trim();
+    let txt = data.content?.map(b => b.text || "").join("") || "{}";
+    txt = txt.replace(/```json|```/g, "").trim();
     const p = JSON.parse(txt);
 
-    p.tarot_positions?.forEach((pos,i) => {
-      const el = document.getElementById(`tlabel${i}`);
-      el.textContent = pos; el.classList.add('visible');
+    p.tarot_positions?.forEach((pos, i) => {
+      document.getElementById(`tlabel${i}`).textContent = pos;
+      document.getElementById(`tlabel${i}`).classList.add('visible');
       document.getElementById(`rl${i}`).textContent = pos;
-      document.getElementById(`rt${i}`).textContent = p.tarot_readings?.[i]||"";
+      document.getElementById(`rt${i}`).textContent = p.tarot_readings?.[i] || "";
     });
-    p.oracle_positions?.forEach((pos,i) => {
-      const el = document.getElementById(`olabel${i}`);
-      el.textContent = pos; el.classList.add('visible');
+    p.oracle_positions?.forEach((pos, i) => {
+      document.getElementById(`olabel${i}`).textContent = pos;
+      document.getElementById(`olabel${i}`).classList.add('visible');
       document.getElementById(`ol${i}`).textContent = pos;
-      document.getElementById(`ot${i}`).textContent = p.oracle_readings?.[i]||"";
+      document.getElementById(`ot${i}`).textContent = p.oracle_readings?.[i] || "";
     });
-  } catch {
-    document.getElementById('rt0').textContent = "อ่านไม่ออก ลองใหม่นะ";
+    if (p.summary) {
+      document.getElementById('summary-text').textContent = p.summary;
+    }
+  } catch (e) {
+    document.getElementById('rt0').textContent = "อ่านไม่ออก: " + e.message;
   }
 
   document.getElementById('loading-text').classList.add('hidden');
@@ -516,39 +410,58 @@ ${oDesc}
 }
 
 function resetApp() {
-  document.getElementById('question-input').value = '';
+  const ta = document.getElementById('question-input');
+  ta.value = '';
   document.getElementById('btn-draw').disabled = true;
   document.getElementById('phase-result').classList.add('hidden');
   document.getElementById('phase-input').classList.remove('hidden');
-  const rs = document.getElementById('reading-section');
-  rs.classList.add('hidden'); rs.classList.remove('show');
+  setTimeout(() => { ta.focus(); }, 100);
+  document.getElementById('reading-section').classList.add('hidden');
+  document.getElementById('reading-section').classList.remove('show');
   document.getElementById('loading-text').classList.add('hidden');
   document.getElementById('btn-reset').classList.add('hidden');
   document.getElementById('divider').classList.remove('show');
+  document.getElementById('summary-text').textContent = '';
 
-  for (let i=0;i<3;i++){
-    const ti = document.getElementById(`ti${i}`);
-    ti.style.transition = 'none';
-    ti.classList.remove('flipped','reversed');
-    void ti.offsetWidth; // force reflow
-    ti.style.transition = '';
-    document.getElementById(`tf${i}`).classList.remove('glow');
-    document.getElementById(`trev${i}`).classList.add('hidden');
-    document.getElementById(`tlabel${i}`).textContent='—';
-    document.getElementById(`tlabel${i}`).classList.remove('visible');
-
-    const oi = document.getElementById(`oi${i}`);
-    oi.style.transition = 'none';
-    oi.classList.remove('flipped');
-    void oi.offsetWidth;
-    oi.style.transition = '';
-    document.getElementById(`of${i}`).classList.remove('glow');
-    document.getElementById(`olabel${i}`).textContent='—';
-    document.getElementById(`olabel${i}`).classList.remove('visible');
+  for (let i = 0; i < 3; i++) {
+    ['ti','tf','trev','tlabel','rl','rt'].forEach(id => {
+      const el = document.getElementById(`${id}${i}`);
+      if (!el) return;
+      if (id === 'ti') {
+        el.style.transition = 'none';
+        el.classList.remove('flipped', 'reversed');
+        void el.offsetWidth;
+        el.style.transition = '';
+      } else if (id === 'tf') {
+        el.classList.remove('glow');
+      } else if (id === 'trev') {
+        el.classList.add('hidden');
+      } else if (id === 'tlabel') {
+        el.textContent = ''; el.classList.remove('visible');
+      } else {
+        el.textContent = '';
+      }
+    });
+    ['oi','of','orev','olabel','ol','ot'].forEach(id => {
+      const el = document.getElementById(`${id}${i}`);
+      if (!el) return;
+      if (id === 'oi') {
+        el.style.transition = 'none';
+        el.classList.remove('flipped', 'reversed');
+        void el.offsetWidth;
+        el.style.transition = '';
+      } else if (id === 'of') {
+        el.classList.remove('glow');
+      } else if (id === 'orev') {
+        el.classList.add('hidden');
+      } else if (id === 'olabel') {
+        el.textContent = ''; el.classList.remove('visible');
+      } else {
+        el.textContent = '';
+      }
+    });
   }
 }
-
-function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
 </script>
 </body>
 </html>
