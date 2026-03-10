@@ -224,7 +224,7 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 
-const API_KEY = "sk-ant-api03-jjBVsEy6UBaxPYwS47nOE3InlHv" + "iywJSCGlHlhIolPrljhPaUDpIjiwRmocsDXRLsWVzLgDUktmDcEJzFJMzHQ-BV61ywAA";
+const API_KEY = "sk-ant-api03-jjBVsEy6UBaxPYwS47nOE3InlHviyw" + "JSCGlHlhIolPrljhPaUDpIjiwRmocsDXRLsWVzLgDUktmDcEJzFJMzHQ-BV61ywAA";
 
 const TAROT = [
   {name:"The Fool",th:"คนโง่",emoji:"🃏"},{name:"The Magician",th:"จอมเวทย์",emoji:"🎩"},
@@ -340,7 +340,7 @@ async function handleDraw() {
   const tDesc = tc.map((c, i) => `ทาโรต์ใบ${i+1}: ${c.name} (${c.th})${tRev[i] ? ' [กลับหัว]' : ''}`).join('\n');
   const oDesc = oc.map((c, i) => `ออราเคิลใบ${i+1}: ${c.name} (${c.th})${oRev[i] ? ' [กลับหัว]' : ''}`).join('\n');
 
-  const prompt = `คุณคือหมอดูไพ่ทาโรต์ชื่อ "มีนา" พูดภาษาพูดแบบเพื่อนสนิท ใช้ "เธอ" แทนคนถาม
+  const prompt = `คุณคือหมอดูไพ่ทาโรต์ชืรอ "มีร่า" พูดภาษาพูดแบบเพื่อนสนิท ใช้ "เธอ" แทนคนถาม
 
 คำถาม: "${q}"
 ${tDesc}
@@ -373,14 +373,43 @@ ${oDesc}
       },
       body: JSON.stringify({
         model: "claude-sonnet-4-20250514",
-        max_tokens: 1500,
+        max_tokens: 2500,
         messages: [{ role: "user", content: prompt }]
       })
     });
     const data = await res.json();
-    let txt = data.content?.map(b => b.text || "").join("") || "{}";
-    txt = txt.replace(/```json|```/g, "").trim();
-    const p = JSON.parse(txt);
+
+    // ถ้า API return error
+    if (data.error) {
+      document.getElementById('rt0').textContent = "API Error: " + data.error.message;
+      document.getElementById('loading-text').classList.add('hidden');
+      document.getElementById('reading-section').classList.remove('hidden');
+      document.getElementById('reading-section').classList.add('show');
+      document.getElementById('btn-reset').classList.remove('hidden');
+      return;
+    }
+
+    let txt = "";
+    if (data.content && Array.isArray(data.content)) {
+      txt = data.content.map(b => b.text || "").join("").trim();
+    }
+
+    // ลบ markdown code block ออก
+    txt = txt.replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/\s*```$/i, "").trim();
+
+    // parse JSON
+    let p;
+    try {
+      p = JSON.parse(txt);
+    } catch(parseErr) {
+      // ลอง extract เฉพาะ JSON object
+      const match = txt.match(/\{[\s\S]*\}/);
+      if (match) {
+        p = JSON.parse(match[0]);
+      } else {
+        throw new Error("Parse failed: " + txt.substring(0, 200));
+      }
+    }
 
     p.tarot_positions?.forEach((pos, i) => {
       document.getElementById(`tlabel${i}`).textContent = pos;
@@ -398,7 +427,7 @@ ${oDesc}
       document.getElementById('summary-text').textContent = p.summary;
     }
   } catch (e) {
-    document.getElementById('rt0').textContent = "อ่านไม่ออก: " + e.message;
+    document.getElementById('rt0').textContent = "Error: " + e.message;
   }
 
   document.getElementById('loading-text').classList.add('hidden');
