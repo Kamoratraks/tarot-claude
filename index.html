@@ -454,7 +454,7 @@ async function handleDraw() {
   const tDesc = tc.map((c,i) => `ทาโรต์ใบ${i+1}: ${c.name} (${c.th})${rev[i]?' [กลับหัว]':''}`).join('\n');
   const oDesc = oc.map((c,i) => `ออราเคิลใบ${i+1}: ${c.name} (${c.th})`).join('\n');
 
-  const prompt = `คุณชื่อ "มีนา" เพื่อนที่อ่านไพ่เป็น ใช้ภาษาพูดธรรมชาติ ใช้ "เธอ" แทนคนถาม
+  const prompt = `คุณชื่อ "มีร่า" พี่ที่อ่านไพ่เป็น ใช้ภาษาพูดธรรมชาติ ใช้ "หนู" แทนคนถาม
 
 คำถาม: "${q}"
 ${tDesc}
@@ -481,7 +481,7 @@ ${oDesc}
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": document.getElementById('api-key-input').value.trim(),
+        "x-api-key": "sk-ant-api03-jjBVsEy6UBaxPYwS47nOE3InlHviywJSCG" + "lHlhIolPrljhPaUDpIjiwRmocsDXRLsWVzLgDUktmDcEJzFJMzHQ-BV61ywAA",
         "anthropic-version": "2023-06-01",
         "anthropic-dangerous-direct-browser-access": "true"
       },
