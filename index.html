@@ -1,292 +1,538 @@
-import { useState } from "react";
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ถามมา ทาโรต์</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-const TAROT_CARDS = [
-  { name: "The Fool", th: "คนโง่", emoji: "🃏" },
-  { name: "The Magician", th: "จอมเวทย์", emoji: "🎩" },
-  { name: "The High Priestess", th: "นักบวชหญิง", emoji: "🌙" },
-  { name: "The Empress", th: "จักรพรรดินี", emoji: "👑" },
-  { name: "The Emperor", th: "จักรพรรดิ", emoji: "⚔️" },
-  { name: "The Hierophant", th: "นักบวช", emoji: "🕍" },
-  { name: "The Lovers", th: "คู่รัก", emoji: "💕" },
-  { name: "The Chariot", th: "รถศึก", emoji: "🏆" },
-  { name: "Strength", th: "ความแข็งแกร่ง", emoji: "🦁" },
-  { name: "The Hermit", th: "ฤาษี", emoji: "🕯️" },
-  { name: "Wheel of Fortune", th: "วงล้อโชคชะตา", emoji: "🎡" },
-  { name: "Justice", th: "ความยุติธรรม", emoji: "⚖️" },
-  { name: "The Hanged Man", th: "ชายถูกแขวน", emoji: "🙃" },
-  { name: "Death", th: "ความตาย", emoji: "💀" },
-  { name: "Temperance", th: "ความพอดี", emoji: "⚗️" },
-  { name: "The Devil", th: "ปีศาจ", emoji: "😈" },
-  { name: "The Tower", th: "หอคอย", emoji: "🗼" },
-  { name: "The Star", th: "ดาว", emoji: "⭐" },
-  { name: "The Moon", th: "พระจันทร์", emoji: "🌕" },
-  { name: "The Sun", th: "พระอาทิตย์", emoji: "☀️" },
-  { name: "Judgement", th: "การพิพากษา", emoji: "📯" },
-  { name: "The World", th: "โลก", emoji: "🌍" },
-  { name: "Ace of Wands", th: "เอซไม้เท้า", emoji: "🪄" },
-  { name: "Two of Cups", th: "สองถ้วย", emoji: "🥂" },
-  { name: "Three of Swords", th: "สามดาบ", emoji: "💔" },
-  { name: "Four of Pentacles", th: "สี่เหรียญ", emoji: "💰" },
-  { name: "Five of Wands", th: "ห้าไม้เท้า", emoji: "⚡" },
-  { name: "Six of Cups", th: "หกถ้วย", emoji: "🌸" },
-  { name: "Seven of Swords", th: "เจ็ดดาบ", emoji: "🗡️" },
-  { name: "Eight of Cups", th: "แปดถ้วย", emoji: "🚶" },
-  { name: "Nine of Pentacles", th: "เก้าเหรียญ", emoji: "🍇" },
-  { name: "Ten of Wands", th: "สิบไม้เท้า", emoji: "😮‍💨" },
-  { name: "Page of Cups", th: "เด็กรับใช้ถ้วย", emoji: "🐟" },
-  { name: "Knight of Swords", th: "อัศวินดาบ", emoji: "🌪️" },
-  { name: "Queen of Pentacles", th: "ราชินีเหรียญ", emoji: "🌿" },
-  { name: "King of Cups", th: "กษัตริย์ถ้วย", emoji: "🌊" },
-];
-
-export default function TarotApp() {
-  const [question, setQuestion] = useState("");
-  const [drawnCard, setDrawnCard] = useState(null);
-  const [reading, setReading] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [isReversed, setIsReversed] = useState(false);
-  const [flipped, setFlipped] = useState(false);
-  const [phase, setPhase] = useState("input");
-
-  const handleSubmit = async () => {
-    if (!question.trim()) return;
-    setIsLoading(true);
-    setPhase("drawing");
-    setFlipped(false);
-    setReading("");
-
-    const card = TAROT_CARDS[Math.floor(Math.random() * TAROT_CARDS.length)];
-    const reversed = Math.random() > 0.65;
-    setDrawnCard(card);
-    setIsReversed(reversed);
-
-    await new Promise(r => setTimeout(r, 900));
-    setFlipped(true);
-    await new Promise(r => setTimeout(r, 700));
-
-    const prompt = `คุณชื่อ "มีนา" เพื่อนที่อ่านไพ่ทาโรต์เป็น คุยกับเพื่อนแบบสนิท ใช้ "เธอ" แทนคนถาม ใช้ภาษาพูดธรรมชาติ
-
-ไพ่ที่จั่วได้: ${card.name} (${card.th}) ${reversed ? "[กลับหัว]" : ""}
-คำถาม: "${question}"
-
-กฎการตอบ:
-1. ตอบตรงกับคำถามนี้เลย ไม่ต้องอธิบายความหมายไพ่ทั่วไป
-2. พูดเหมือนพี่น้องคุยกัน ไม่ใช่ AI อธิบาย
-3. ถ้าถามว่าใครได้/ใครชนะ/จะเกิดอะไร — บอกเลย ไม่ต้อง "อาจจะ"
-4. ไม่ต้องขึ้นต้นด้วยชื่อไพ่ ไม่ต้องสรุปท้าย ไม่ต้องบอกว่า "ไพ่บอกว่า"
-5. กระชับ 3-5 ประโยคพอ เน้นใจความ
-6. ถ้าคำถามเป็นเรื่องละเอียดอ่อน (ความตาย สุขภาพ เรื่องคู่ เรื่อง 18+) ตอบตรงๆ ไม่หลบ ไม่เบี่ยง
-7. ห้ามหยาบคาย ไม่อคติ มีเหตุผล ตรงไปตรงมา ไม่ต้องสุภาพเกินจริง`;
-
-    try {
-      const response = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
-          max_tokens: 1000,
-          messages: [{ role: "user", content: prompt }],
-        }),
-      });
-      const data = await response.json();
-      const text = data.content?.map(b => b.text || "").join("") || "อ่านไม่ออก ลองใหม่นะ";
-      setReading(text);
-    } catch {
-      setReading("เชื่อมต่อไม่ได้ ลองอีกทีนะ");
+    body {
+      min-height: 100vh;
+      background: linear-gradient(160deg, #0a0015 0%, #1a0030 60%, #0d001a 100%);
+      font-family: 'Georgia', serif;
+      color: #e8d5ff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px 80px;
     }
 
-    setIsLoading(false);
-    setPhase("result");
-  };
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse at 30% 20%, rgba(100,30,180,0.12) 0%, transparent 55%),
+        radial-gradient(ellipse at 70% 80%, rgba(50,0,100,0.18) 0%, transparent 55%);
+      z-index: 0;
+    }
 
-  const reset = () => {
-    setQuestion("");
-    setDrawnCard(null);
-    setReading("");
-    setFlipped(false);
-    setPhase("input");
-  };
+    .container { width: 100%; max-width: 700px; position: relative; z-index: 1; }
 
-  return (
-    <div style={{
-      minHeight: "100vh",
-      background: "linear-gradient(160deg, #0a0015 0%, #1a0030 60%, #0d001a 100%)",
-      fontFamily: "'Georgia', serif",
-      color: "#e8d5ff",
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      padding: "40px 20px",
-    }}>
-      <div style={{
-        position: "fixed", inset: 0, pointerEvents: "none",
-        background: "radial-gradient(ellipse at 30% 20%, rgba(100,30,180,0.12) 0%, transparent 55%), radial-gradient(ellipse at 70% 80%, rgba(50,0,100,0.18) 0%, transparent 55%)",
-      }} />
+    .header { text-align: center; margin-bottom: 36px; }
+    .header-stars { font-size: 13px; letter-spacing: 5px; color: #8050c0; margin-bottom: 6px; }
+    .header h1 {
+      font-size: clamp(26px, 5vw, 44px); font-weight: normal;
+      color: #f0e0ff; letter-spacing: 3px;
+      text-shadow: 0 0 25px rgba(160,80,255,0.45);
+    }
+    .header p { color: #7a50a0; font-size: 13px; margin-top: 6px; letter-spacing: 1px; }
 
-      {/* Header */}
-      <div style={{ textAlign: "center", marginBottom: "36px" }}>
-        <div style={{ fontSize: "13px", letterSpacing: "5px", color: "#8050c0", marginBottom: "6px" }}>✦ ✦ ✦</div>
-        <h1 style={{
-          fontSize: "clamp(26px, 5vw, 44px)", fontWeight: "normal",
-          color: "#f0e0ff", margin: 0, letterSpacing: "3px",
-          textShadow: "0 0 25px rgba(160,80,255,0.45)",
-        }}>มีนา ทาโรต์</h1>
-        <p style={{ color: "#7a50a0", fontSize: "13px", margin: "6px 0 0", letterSpacing: "1px" }}>
-          ถามได้ทุกเรื่อง · ตอบตรง · ไม่อ้อมค้อม
-        </p>
+    .input-box {
+      background: rgba(70,15,130,0.22);
+      border: 1px solid rgba(150,70,240,0.28);
+      border-radius: 16px; padding: 28px;
+      backdrop-filter: blur(8px);
+    }
+    .input-box p { font-size: 15px; color: #b090e0; line-height: 1.65; margin-bottom: 18px; }
+
+    textarea {
+      width: 100%;
+      background: rgba(15,0,35,0.65);
+      border: 1px solid rgba(130,55,210,0.38);
+      border-radius: 10px; padding: 14px;
+      color: #e8d5ff; font-size: 16px; font-family: inherit;
+      resize: vertical; outline: none; line-height: 1.65; min-height: 100px;
+      transition: border-color 0.2s;
+    }
+    textarea:focus { border-color: rgba(170,90,255,0.55); }
+    textarea::placeholder { color: #5a3888; }
+
+    .btn-draw {
+      margin-top: 14px; width: 100%; padding: 15px;
+      background: linear-gradient(135deg, #6018b0, #9030d0);
+      border: none; border-radius: 10px; color: #fff;
+      font-size: 15px; letter-spacing: 2px; cursor: pointer;
+      font-family: inherit; transition: all 0.3s;
+    }
+    .btn-draw:disabled { background: rgba(50,15,90,0.4); color: #50308a; cursor: not-allowed; }
+    .btn-draw:not(:disabled):hover { background: linear-gradient(135deg, #7520c8, #a040e8); transform: translateY(-1px); }
+
+    .question-recap {
+      background: rgba(50,8,90,0.28);
+      border: 1px solid rgba(110,45,190,0.28);
+      border-radius: 10px; padding: 11px 18px;
+      margin-bottom: 28px; font-size: 14px; color: #9060c0;
+    }
+    .question-recap span { color: #5a2880; }
+
+    .section-title {
+      text-align: center; font-size: 12px;
+      letter-spacing: 4px; color: #7040a0;
+      margin-bottom: 16px; text-transform: uppercase;
+    }
+
+    .cards-row {
+      display: flex; justify-content: center;
+      gap: 16px; margin-bottom: 8px; flex-wrap: wrap;
+    }
+
+    .card-col { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+
+    .card-label {
+      font-size: 12px; color: #9060c0; letter-spacing: 1px;
+      text-align: center; min-height: 32px;
+      display: flex; align-items: center; padding: 0 4px;
+      opacity: 0; transition: opacity 0.5s 0.2s;
+      max-width: 120px; line-height: 1.4;
+    }
+    .card-label.visible { opacity: 1; }
+    .oracle-label { color: #5080b0; }
+
+    .card-scene { width: 110px; height: 185px; perspective: 1000px; }
+    .oracle-scene { width: 100px; height: 165px; perspective: 1000px; }
+
+    .card-inner {
+      width: 100%; height: 100%; position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.85s cubic-bezier(0.4,0,0.2,1);
+    }
+    .card-inner.flipped { transform: rotateY(180deg); }
+    .card-inner.flipped.reversed { transform: rotateY(180deg) rotate(180deg); }
+
+    .card-face {
+      position: absolute; inset: 0; backface-visibility: hidden;
+      border-radius: 12px; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 8px; padding: 10px 6px;
+    }
+    .card-back {
+      background: linear-gradient(135deg, #280048, #480088);
+      border: 2px solid rgba(150,70,240,0.38); font-size: 36px;
+    }
+    .oracle-back {
+      background: linear-gradient(135deg, #001a30, #002f55);
+      border: 2px solid rgba(70,150,240,0.38); font-size: 30px;
+    }
+    .card-front {
+      background: linear-gradient(155deg, #180030, #380068);
+      border: 2px solid rgba(190,110,255,0.55);
+      transform: rotateY(180deg); transition: box-shadow 0.5s;
+    }
+    .card-front.glow { box-shadow: 0 0 25px rgba(150,70,255,0.35); }
+    .oracle-front {
+      background: linear-gradient(155deg, #001020, #002040);
+      border: 2px solid rgba(110,180,255,0.55);
+      transform: rotateY(180deg); transition: box-shadow 0.5s;
+    }
+    .oracle-front.glow { box-shadow: 0 0 25px rgba(70,140,255,0.3); }
+
+    .card-emoji { font-size: 36px; }
+    .oracle-emoji { font-size: 28px; }
+    .card-name-en { font-size: 10px; color: #b080f0; text-align: center; letter-spacing: 0.3px; line-height: 1.3; }
+    .oracle-name-en { font-size: 9px; color: #6090d0; text-align: center; letter-spacing: 0.3px; line-height: 1.3; }
+    .card-name-th { font-size: 11px; color: #ddbcff; font-weight: bold; text-align: center; }
+    .oracle-name-th { font-size: 10px; color: #90b8e0; font-weight: bold; text-align: center; }
+    .card-reversed { font-size: 9px; color: #ff7575; letter-spacing: 1px; }
+
+    .divider {
+      display: flex; align-items: center; gap: 12px;
+      margin: 28px 0 24px; opacity: 0; transition: opacity 0.5s;
+    }
+    .divider.show { opacity: 1; }
+    .divider-line { flex: 1; height: 1px; background: rgba(100,50,180,0.3); }
+    .divider-oracle .divider-line { background: rgba(50,100,180,0.3); }
+    .divider-text { font-size: 11px; letter-spacing: 3px; color: #6040a0; white-space: nowrap; }
+
+    .loading-text { text-align: center; color: #8050b8; font-size: 14px; padding: 14px 0; }
+
+    .reading-section { margin-top: 24px; opacity: 0; transition: opacity 0.6s; }
+    .reading-section.show { opacity: 1; }
+
+    .reading-block {
+      margin-bottom: 14px;
+      background: rgba(35,8,70,0.42);
+      border: 1px solid rgba(150,70,240,0.18);
+      border-radius: 12px; padding: 18px 20px;
+      animation: fadeUp 0.4s ease;
+    }
+    .oracle-reading {
+      background: rgba(8,20,50,0.5);
+      border-color: rgba(70,130,240,0.18);
+    }
+    .reading-label {
+      font-size: 11px; letter-spacing: 2px; color: #7040a0;
+      margin-bottom: 10px; text-transform: uppercase;
+    }
+    .oracle-reading .reading-label { color: #4070a0; }
+    .reading-block p { font-size: 15px; line-height: 1.85; color: #e0ccff; white-space: pre-wrap; }
+    .oracle-reading p { color: #b8d0f0; }
+
+    .btn-reset {
+      width: 100%; padding: 13px; background: transparent;
+      border: 1px solid rgba(130,55,210,0.42); border-radius: 10px;
+      color: #9060c0; font-size: 14px; cursor: pointer;
+      font-family: inherit; letter-spacing: 1px; transition: all 0.25s; margin-top: 8px;
+    }
+    .btn-reset:hover { background: rgba(100,40,180,0.18); color: #c090f0; }
+
+    .hidden { display: none; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 480px) {
+      .card-scene { width: 88px; height: 150px; }
+      .oracle-scene { width: 80px; height: 138px; }
+      .card-emoji { font-size: 28px; }
+      .oracle-emoji { font-size: 24px; }
+      .cards-row { gap: 10px; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="header-stars">✦ ✦ ✦</div>
+    <h1>มีนา ทาโรต์</h1>
+    <p>ถามได้ทุกเรื่อง · ตอบตรง · ไม่อ้อมค้อม</p>
+  </div>
+
+  <!-- INPUT -->
+  <div id="phase-input">
+    <div class="input-box">
+      <p>ถามเรื่องอะไรก็ได้ — ความรัก งาน เงิน สุขภาพ การเมือง ฯลฯ</p>
+      <textarea id="question-input" placeholder="พิมพ์คำถามที่นี่..."></textarea>
+      <button class="btn-draw" id="btn-draw" onclick="handleDraw()" disabled>🔮 จั่วไพ่</button>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div id="phase-result" class="hidden">
+    <div class="question-recap">
+      <span>คำถาม: </span><span id="display-question"></span>
+    </div>
+
+    <!-- Tarot -->
+    <div class="section-title">✦ ไพ่ทาโรต์</div>
+    <div class="cards-row">
+      <div class="card-col">
+        <div class="card-scene">
+          <div class="card-inner" id="ti0">
+            <div class="card-face card-back">🔮</div>
+            <div class="card-face card-front" id="tf0">
+              <div class="card-emoji" id="te0"></div>
+              <div class="card-name-en" id="ten0"></div>
+              <div class="card-name-th" id="tth0"></div>
+              <div class="card-reversed hidden" id="trev0">กลับหัว</div>
+            </div>
+          </div>
+        </div>
+        <div class="card-label" id="tlabel0">—</div>
+      </div>
+      <div class="card-col">
+        <div class="card-scene">
+          <div class="card-inner" id="ti1">
+            <div class="card-face card-back">🔮</div>
+            <div class="card-face card-front" id="tf1">
+              <div class="card-emoji" id="te1"></div>
+              <div class="card-name-en" id="ten1"></div>
+              <div class="card-name-th" id="tth1"></div>
+              <div class="card-reversed hidden" id="trev1">กลับหัว</div>
+            </div>
+          </div>
+        </div>
+        <div class="card-label" id="tlabel1">—</div>
+      </div>
+      <div class="card-col">
+        <div class="card-scene">
+          <div class="card-inner" id="ti2">
+            <div class="card-face card-back">🔮</div>
+            <div class="card-face card-front" id="tf2">
+              <div class="card-emoji" id="te2"></div>
+              <div class="card-name-en" id="ten2"></div>
+              <div class="card-name-th" id="tth2"></div>
+              <div class="card-reversed hidden" id="trev2">กลับหัว</div>
+            </div>
+          </div>
+        </div>
+        <div class="card-label" id="tlabel2">—</div>
+      </div>
+    </div>
+
+    <!-- Divider -->
+    <div class="divider divider-oracle" id="divider">
+      <div class="divider-line"></div>
+      <div class="divider-text">✦ ออราเคิล ✦</div>
+      <div class="divider-line"></div>
+    </div>
+
+    <!-- Oracle -->
+    <div class="cards-row">
+      <div class="card-col">
+        <div class="oracle-scene">
+          <div class="card-inner" id="oi0">
+            <div class="card-face oracle-back">🌟</div>
+            <div class="card-face oracle-front" id="of0">
+              <div class="oracle-emoji" id="oe0"></div>
+              <div class="oracle-name-en" id="oen0"></div>
+              <div class="oracle-name-th" id="oth0"></div>
+            </div>
+          </div>
+        </div>
+        <div class="card-label oracle-label" id="olabel0">—</div>
+      </div>
+      <div class="card-col">
+        <div class="oracle-scene">
+          <div class="card-inner" id="oi1">
+            <div class="card-face oracle-back">🌟</div>
+            <div class="card-face oracle-front" id="of1">
+              <div class="oracle-emoji" id="oe1"></div>
+              <div class="oracle-name-en" id="oen1"></div>
+              <div class="oracle-name-th" id="oth1"></div>
+            </div>
+          </div>
+        </div>
+        <div class="card-label oracle-label" id="olabel1">—</div>
+      </div>
+      <div class="card-col">
+        <div class="oracle-scene">
+          <div class="card-inner" id="oi2">
+            <div class="card-face oracle-back">🌟</div>
+            <div class="card-face oracle-front" id="of2">
+              <div class="oracle-emoji" id="oe2"></div>
+              <div class="oracle-name-en" id="oen2"></div>
+              <div class="oracle-name-th" id="oth2"></div>
+            </div>
+          </div>
+        </div>
+        <div class="card-label oracle-label" id="olabel2">—</div>
+      </div>
+    </div>
+
+    <div id="loading-text" class="loading-text hidden">กำลังอ่านไพ่...</div>
+
+    <!-- Reading -->
+    <div class="reading-section hidden" id="reading-section">
+      <div class="section-title" style="margin-top:8px;">✦ คำทำนาย ✦</div>
+      <div class="reading-block" id="rb0"><div class="reading-label" id="rl0"></div><p id="rt0"></p></div>
+      <div class="reading-block" id="rb1"><div class="reading-label" id="rl1"></div><p id="rt1"></p></div>
+      <div class="reading-block" id="rb2"><div class="reading-label" id="rl2"></div><p id="rt2"></p></div>
+
+      <div class="divider divider-oracle show" style="margin: 20px 0 16px;">
+        <div class="divider-line"></div>
+        <div class="divider-text">✦ ออราเคิลขยายความ ✦</div>
+        <div class="divider-line"></div>
       </div>
 
-      {/* Input */}
-      {phase === "input" && (
-        <div style={{ width: "100%", maxWidth: "520px" }}>
-          <div style={{
-            background: "rgba(70,15,130,0.22)",
-            border: "1px solid rgba(150,70,240,0.28)",
-            borderRadius: "16px", padding: "28px",
-            backdropFilter: "blur(8px)",
-          }}>
-            <p style={{ margin: "0 0 18px", fontSize: "15px", color: "#b090e0", lineHeight: 1.65 }}>
-              ถามเรื่องอะไรก็ได้ — ความรัก งาน เงิน สุขภาพ การเมือง ฯลฯ
-            </p>
-            <textarea
-              value={question}
-              onChange={e => setQuestion(e.target.value)}
-              placeholder="พิมพ์คำถามที่นี่..."
-              rows={4}
-              style={{
-                width: "100%", boxSizing: "border-box",
-                background: "rgba(15,0,35,0.65)",
-                border: "1px solid rgba(130,55,210,0.38)",
-                borderRadius: "10px", padding: "14px",
-                color: "#e8d5ff", fontSize: "16px",
-                fontFamily: "inherit", resize: "vertical", outline: "none", lineHeight: 1.65,
-              }}
-            />
-            <button
-              onClick={handleSubmit}
-              disabled={!question.trim()}
-              style={{
-                marginTop: "14px", width: "100%", padding: "15px",
-                background: question.trim()
-                  ? "linear-gradient(135deg, #6018b0, #9030d0)"
-                  : "rgba(50,15,90,0.4)",
-                border: "none", borderRadius: "10px",
-                color: question.trim() ? "#fff" : "#50308a",
-                fontSize: "15px", letterSpacing: "2px",
-                cursor: question.trim() ? "pointer" : "not-allowed",
-                fontFamily: "inherit", transition: "all 0.3s",
-              }}
-            >
-              🔮 จั่วไพ่
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Card + Reading */}
-      {(phase === "drawing" || phase === "result") && drawnCard && (
-        <div style={{ width: "100%", maxWidth: "520px" }}>
-          {/* Question */}
-          <div style={{
-            background: "rgba(50,8,90,0.28)",
-            border: "1px solid rgba(110,45,190,0.28)",
-            borderRadius: "10px", padding: "11px 18px",
-            marginBottom: "22px", fontSize: "14px", color: "#9060c0",
-          }}>
-            <span style={{ color: "#5a2880" }}>คำถาม: </span>{question}
-          </div>
-
-          {/* Card flip */}
-          <div style={{ display: "flex", justifyContent: "center", marginBottom: "26px" }}>
-            <div style={{ width: "155px", height: "255px", perspective: "1000px" }}>
-              <div style={{
-                width: "100%", height: "100%", position: "relative",
-                transformStyle: "preserve-3d",
-                transition: "transform 0.85s cubic-bezier(0.4,0,0.2,1)",
-                transform: flipped
-                  ? isReversed ? "rotateY(180deg) rotate(180deg)" : "rotateY(180deg)"
-                  : "rotateY(0deg)",
-              }}>
-                {/* Back */}
-                <div style={{
-                  position: "absolute", inset: 0, backfaceVisibility: "hidden",
-                  background: "linear-gradient(135deg, #280048, #480088)",
-                  border: "2px solid rgba(150,70,240,0.38)",
-                  borderRadius: "14px", display: "flex",
-                  alignItems: "center", justifyContent: "center", fontSize: "46px",
-                }}>🔮</div>
-                {/* Front */}
-                <div style={{
-                  position: "absolute", inset: 0, backfaceVisibility: "hidden",
-                  transform: "rotateY(180deg)",
-                  background: "linear-gradient(155deg, #180030, #380068)",
-                  border: "2px solid rgba(190,110,255,0.55)",
-                  borderRadius: "14px",
-                  display: "flex", flexDirection: "column",
-                  alignItems: "center", justifyContent: "center", gap: "10px",
-                  boxShadow: flipped ? "0 0 35px rgba(150,70,255,0.35)" : "none",
-                }}>
-                  <div style={{ fontSize: "52px" }}>{drawnCard.emoji}</div>
-                  <div style={{ fontSize: "12px", color: "#b080f0", textAlign: "center", padding: "0 10px", letterSpacing: "0.5px" }}>
-                    {drawnCard.name}
-                  </div>
-                  <div style={{ fontSize: "14px", color: "#ddbcff", fontWeight: "bold", textAlign: "center" }}>
-                    {drawnCard.th}
-                  </div>
-                  {isReversed && (
-                    <div style={{ fontSize: "10px", color: "#ff7575", letterSpacing: "1px" }}>กลับหัว</div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Reading */}
-          {phase === "result" && (
-            <div style={{
-              background: "rgba(35,8,70,0.48)",
-              border: "1px solid rgba(150,70,240,0.22)",
-              borderRadius: "14px", padding: "24px",
-              marginBottom: "20px",
-              backdropFilter: "blur(6px)",
-              animation: "fadeUp 0.5s ease",
-            }}>
-              <p style={{ margin: 0, lineHeight: 1.85, fontSize: "16px", color: "#e8d5ff", whiteSpace: "pre-wrap" }}>
-                {reading}
-              </p>
-            </div>
-          )}
-
-          {isLoading && (
-            <div style={{ textAlign: "center", color: "#8050b8", fontSize: "14px", padding: "10px 0" }}>
-              กำลังอ่านไพ่...
-            </div>
-          )}
-
-          {phase === "result" && (
-            <button onClick={reset} style={{
-              width: "100%", padding: "13px",
-              background: "transparent",
-              border: "1px solid rgba(130,55,210,0.42)",
-              borderRadius: "10px", color: "#9060c0",
-              fontSize: "14px", cursor: "pointer",
-              fontFamily: "inherit", letterSpacing: "1px",
-            }}>
-              ถามอีกครั้ง
-            </button>
-          )}
-        </div>
-      )}
-
-      <style>{`
-        @keyframes fadeUp {
-          from { opacity: 0; transform: translateY(8px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        textarea:focus {
-          border-color: rgba(170,90,255,0.55) !important;
-        }
-      `}</style>
+      <div class="reading-block oracle-reading" id="ob0"><div class="reading-label" id="ol0"></div><p id="ot0"></p></div>
+      <div class="reading-block oracle-reading" id="ob1"><div class="reading-label" id="ol1"></div><p id="ot1"></p></div>
+      <div class="reading-block oracle-reading" id="ob2"><div class="reading-label" id="ol2"></div><p id="ot2"></p></div>
     </div>
-  );
+
+    <button class="btn-reset hidden" id="btn-reset" onclick="resetApp()">ถามอีกครั้ง</button>
+  </div>
+</div>
+
+<script>
+const TAROT = [
+  {name:"The Fool",th:"คนโง่",emoji:"🃏"},{name:"The Magician",th:"จอมเวทย์",emoji:"🎩"},
+  {name:"The High Priestess",th:"นักบวชหญิง",emoji:"🌙"},{name:"The Empress",th:"จักรพรรดินี",emoji:"👑"},
+  {name:"The Emperor",th:"จักรพรรดิ",emoji:"⚔️"},{name:"The Hierophant",th:"นักบวช",emoji:"🕍"},
+  {name:"The Lovers",th:"คู่รัก",emoji:"💕"},{name:"The Chariot",th:"รถศึก",emoji:"🏆"},
+  {name:"Strength",th:"ความแข็งแกร่ง",emoji:"🦁"},{name:"The Hermit",th:"ฤาษี",emoji:"🕯️"},
+  {name:"Wheel of Fortune",th:"วงล้อโชคชะตา",emoji:"🎡"},{name:"Justice",th:"ความยุติธรรม",emoji:"⚖️"},
+  {name:"The Hanged Man",th:"ชายถูกแขวน",emoji:"🙃"},{name:"Death",th:"ความตาย",emoji:"💀"},
+  {name:"Temperance",th:"ความพอดี",emoji:"⚗️"},{name:"The Devil",th:"ปีศาจ",emoji:"😈"},
+  {name:"The Tower",th:"หอคอย",emoji:"🗼"},{name:"The Star",th:"ดาว",emoji:"⭐"},
+  {name:"The Moon",th:"พระจันทร์",emoji:"🌕"},{name:"The Sun",th:"พระอาทิตย์",emoji:"☀️"},
+  {name:"Judgement",th:"การพิพากษา",emoji:"📯"},{name:"The World",th:"โลก",emoji:"🌍"},
+  {name:"Ace of Wands",th:"เอซไม้เท้า",emoji:"🪄"},{name:"Two of Cups",th:"สองถ้วย",emoji:"🥂"},
+  {name:"Three of Swords",th:"สามดาบ",emoji:"💔"},{name:"Four of Pentacles",th:"สี่เหรียญ",emoji:"💰"},
+  {name:"Five of Wands",th:"ห้าไม้เท้า",emoji:"⚡"},{name:"Six of Cups",th:"หกถ้วย",emoji:"🌸"},
+  {name:"Seven of Swords",th:"เจ็ดดาบ",emoji:"🗡️"},{name:"Eight of Cups",th:"แปดถ้วย",emoji:"🚶"},
+  {name:"Nine of Pentacles",th:"เก้าเหรียญ",emoji:"🍇"},{name:"Ten of Wands",th:"สิบไม้เท้า",emoji:"😮‍💨"},
+  {name:"Page of Cups",th:"เด็กรับใช้ถ้วย",emoji:"🐟"},{name:"Knight of Swords",th:"อัศวินดาบ",emoji:"🌪️"},
+  {name:"Queen of Pentacles",th:"ราชินีเหรียญ",emoji:"🌿"},{name:"King of Cups",th:"กษัตริย์ถ้วย",emoji:"🌊"},
+  {name:"Five of Cups",th:"ห้าถ้วย",emoji:"😢"},{name:"Ace of Swords",th:"เอซดาบ",emoji:"🔪"},
+  {name:"Ten of Pentacles",th:"สิบเหรียญ",emoji:"🏡"},{name:"Six of Swords",th:"หกดาบ",emoji:"⛵"},
+];
+
+const ORACLE = [
+  {name:"New Beginnings",th:"จุดเริ่มต้นใหม่",emoji:"🌱"},{name:"Trust the Process",th:"เชื่อในกระบวนการ",emoji:"🌀"},
+  {name:"Let Go",th:"ปล่อยวาง",emoji:"🍃"},{name:"Inner Strength",th:"พลังภายใน",emoji:"🔥"},
+  {name:"Patience",th:"ความอดทน",emoji:"⏳"},{name:"Clarity",th:"ความชัดเจน",emoji:"💎"},
+  {name:"Healing",th:"การรักษา",emoji:"🌿"},{name:"Abundance",th:"ความอุดมสมบูรณ์",emoji:"✨"},
+  {name:"Transformation",th:"การเปลี่ยนแปลง",emoji:"🦋"},{name:"Connection",th:"การเชื่อมโยง",emoji:"🤝"},
+  {name:"Intuition",th:"สัญชาตญาณ",emoji:"🌙"},{name:"Courage",th:"ความกล้า",emoji:"🦁"},
+  {name:"Release",th:"การปล่อยปละ",emoji:"🕊️"},{name:"Balance",th:"ความสมดุล",emoji:"⚖️"},
+  {name:"Manifestation",th:"การสร้างจริง",emoji:"⭐"},{name:"Shadow Work",th:"เงามืดภายใน",emoji:"🌑"},
+  {name:"Self-Love",th:"รักตัวเอง",emoji:"💗"},{name:"Boundaries",th:"ขอบเขต",emoji:"🛡️"},
+  {name:"Divine Timing",th:"เวลาของจักรวาล",emoji:"🌌"},{name:"Action",th:"ลงมือทำ",emoji:"⚡"},
+  {name:"Reflection",th:"ทบทวนตัวเอง",emoji:"🪞"},{name:"Flow",th:"ไหลตามธรรมชาติ",emoji:"🌊"},
+  {name:"Forgiveness",th:"การให้อภัย",emoji:"🌸"},{name:"Truth",th:"ความจริง",emoji:"🔮"},
+];
+
+function pick(arr, n) {
+  const a = [...arr], r = [];
+  for (let i = 0; i < n; i++) r.push(a.splice(Math.floor(Math.random()*a.length),1)[0]);
+  return r;
 }
+
+document.getElementById('question-input').addEventListener('input', function() {
+  document.getElementById('btn-draw').disabled = !this.value.trim();
+});
+
+async function handleDraw() {
+  const q = document.getElementById('question-input').value.trim();
+  if (!q) return;
+
+  document.getElementById('phase-input').classList.add('hidden');
+  document.getElementById('phase-result').classList.remove('hidden');
+  document.getElementById('display-question').textContent = q;
+
+  const tc = pick(TAROT, 3), oc = pick(ORACLE, 3);
+  const rev = tc.map(() => Math.random() > 0.65);
+
+  // Fill cards
+  tc.forEach((c,i) => {
+    document.getElementById(`te${i}`).textContent = c.emoji;
+    document.getElementById(`ten${i}`).textContent = c.name;
+    document.getElementById(`tth${i}`).textContent = c.th;
+    if (rev[i]) document.getElementById(`trev${i}`).classList.remove('hidden');
+  });
+  oc.forEach((c,i) => {
+    document.getElementById(`oe${i}`).textContent = c.emoji;
+    document.getElementById(`oen${i}`).textContent = c.name;
+    document.getElementById(`oth${i}`).textContent = c.th;
+  });
+
+  // Flip tarot
+  for (let i = 0; i < 3; i++) {
+    await sleep(400 + i*350);
+    document.getElementById(`ti${i}`).classList.add('flipped');
+    if (rev[i]) document.getElementById(`ti${i}`).classList.add('reversed');
+    await sleep(100);
+    document.getElementById(`tf${i}`).classList.add('glow');
+  }
+
+  await sleep(400);
+  document.getElementById('divider').classList.add('show');
+  await sleep(300);
+
+  // Flip oracle
+  for (let i = 0; i < 3; i++) {
+    await sleep(300 + i*300);
+    document.getElementById(`oi${i}`).classList.add('flipped');
+    await sleep(100);
+    document.getElementById(`of${i}`).classList.add('glow');
+  }
+
+  await sleep(400);
+  document.getElementById('loading-text').classList.remove('hidden');
+
+  const tDesc = tc.map((c,i) => `ทาโรต์ใบ${i+1}: ${c.name} (${c.th})${rev[i]?' [กลับหัว]':''}`).join('\n');
+  const oDesc = oc.map((c,i) => `ออราเคิลใบ${i+1}: ${c.name} (${c.th})`).join('\n');
+
+  const prompt = `คุณชื่อ "มีร่า" พี่ที่อ่านไพ่เป็น ใช้ภาษาพูดธรรมชาติ ใช้ "หนู" แทนคนถาม
+
+คำถาม: "${q}"
+${tDesc}
+${oDesc}
+
+สิ่งที่ต้องทำ:
+1. คิดว่าคำถามนี้ควรแบ่ง 3 มุมอะไรที่เหมาะที่สุด ห้ามใช้ อดีต/ปัจจุบัน/อนาคต เว้นแต่คำถามถามเรื่องเวลาโดยตรง
+   ตัวอย่าง: ถามนิสัยคน → ภายนอก/ในใจ/ที่ซ่อนไว้ | ถามความสัมพันธ์ → มุมเธอ/มุมเขา/สิ่งขวาง | ถามงาน → จุดแข็ง/จุดอ่อน/โอกาส
+2. ตอบทาโรต์แต่ละใบตามมุมที่เลือก ตรงๆ ไม่อธิบายความหมายไพ่ทั่วไป
+3. ออราเคิล 3 ใบ ขยายความหรือให้คำแนะนำเพิ่มเติม ไม่อคติ มีเหตุผล ตรงไปตรงมา ไม่ต้องสุภาพเกินจริง
+
+ตอบ JSON เท่านั้น ไม่มีข้อความอื่น:
+{
+  "tarot_positions": ["มุมที่1","มุมที่2","มุมที่3"],
+  "tarot_readings": ["ตอบ2-3ประโยค","ตอบ2-3ประโยค","ตอบ2-3ประโยค"],
+  "oracle_positions": ["หัวข้อ1","หัวข้อ2","หัวข้อ3"],
+  "oracle_readings": ["ขยาย2-3ประโยค","ขยาย2-3ประโยค","ขยาย2-3ประโยค"]
+}
+
+กฎ: ภาษาพูดเหมือนเพื่อน · ฟันธง ไม่ต้อง "อาจจะ" ถ้าไพ่บอกชัด · ตรงกับคำถาม · ถ้าเรื่องละเอียดอ่อนตอบตรงๆ ไม่เบี่ยง · ไม่หยาบคาย`;
+
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1500,
+        messages: [{role:"user",content:prompt}]
+      })
+    });
+    const data = await res.json();
+    let txt = data.content?.map(b=>b.text||"").join("") || "{}";
+    txt = txt.replace(/```json|```/g,"").trim();
+    const p = JSON.parse(txt);
+
+    p.tarot_positions?.forEach((pos,i) => {
+      const el = document.getElementById(`tlabel${i}`);
+      el.textContent = pos; el.classList.add('visible');
+      document.getElementById(`rl${i}`).textContent = pos;
+      document.getElementById(`rt${i}`).textContent = p.tarot_readings?.[i]||"";
+    });
+    p.oracle_positions?.forEach((pos,i) => {
+      const el = document.getElementById(`olabel${i}`);
+      el.textContent = pos; el.classList.add('visible');
+      document.getElementById(`ol${i}`).textContent = pos;
+      document.getElementById(`ot${i}`).textContent = p.oracle_readings?.[i]||"";
+    });
+  } catch {
+    document.getElementById('rt0').textContent = "อ่านไม่ออก ลองใหม่นะ";
+  }
+
+  document.getElementById('loading-text').classList.add('hidden');
+  const rs = document.getElementById('reading-section');
+  rs.classList.remove('hidden');
+  await sleep(50);
+  rs.classList.add('show');
+  document.getElementById('btn-reset').classList.remove('hidden');
+}
+
+function resetApp() {
+  document.getElementById('question-input').value = '';
+  document.getElementById('btn-draw').disabled = true;
+  document.getElementById('phase-result').classList.add('hidden');
+  document.getElementById('phase-input').classList.remove('hidden');
+  const rs = document.getElementById('reading-section');
+  rs.classList.add('hidden'); rs.classList.remove('show');
+  document.getElementById('loading-text').classList.add('hidden');
+  document.getElementById('btn-reset').classList.add('hidden');
+  document.getElementById('divider').classList.remove('show');
+
+  for (let i=0;i<3;i++){
+    document.getElementById(`ti${i}`).classList.remove('flipped','reversed');
+    document.getElementById(`tf${i}`).classList.remove('glow');
+    document.getElementById(`trev${i}`).classList.add('hidden');
+    document.getElementById(`tlabel${i}`).textContent='—';
+    document.getElementById(`tlabel${i}`).classList.remove('visible');
+    document.getElementById(`oi${i}`).classList.remove('flipped');
+    document.getElementById(`of${i}`).classList.remove('glow');
+    document.getElementById(`olabel${i}`).textContent='—';
+    document.getElementById(`olabel${i}`).classList.remove('visible');
+  }
+}
+
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+</script>
+</body>
+</html>
